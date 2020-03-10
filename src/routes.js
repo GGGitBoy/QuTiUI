@@ -14,6 +14,7 @@ import userList from './views/user/userList.vue'
 
 import rounterChartList from './views/rounterChart/rounterChartList.vue'
 
+import questionnaire  from './views/questionNaire/questionnaire.vue'
 import questionnaire1  from './views/questionNaire/questionnaire-1.vue'
 import questionnaire2  from './views/questionNaire/questionnaire-2.vue'
 import questionnaire3  from './views/questionNaire/questionnaire-3.vue'
@@ -23,9 +24,16 @@ import demo  from './views/questionNaire/demo.vue'
 
 import List  from './views/components/List.vue'
 import Fill  from './views/components/Fill.vue'
+import FillPhone  from './views/components/FillPhone.vue'
 import Edit  from './views/components/Edit.vue'
 import Data  from './views/components/Data.vue'
 import Datepicker  from './views/components/Datepicker.vue'
+
+import ListTest  from './views/test/components/List.vue'
+import FillTest  from './views/test/components/Fill.vue'
+import EditTest  from './views/test/components/Edit.vue'
+import DataTest  from './views/test/components/Data.vue'
+import DatepickerTest  from './views/test/components/Datepicker.vue'
 
 let routes = [
     {
@@ -85,32 +93,57 @@ let routes = [
         path: '/',
         component: Home,
         name: '用户管理',
+        leaf: true,//只有一个节点
         iconCls: 'el-icon-user',
         children: [
             // { path: '/userText', component: userText, name: '用户列表' },
             { path: '/userList', component: userList, name: '用户列表' }
         ]
     },
+
     {
         path: '/',
         component: Home,
         name: '问卷管理',
         iconCls: 'el-icon-tickets',
+        leaf: true,//只有一个节点
         children: [
-                    { path: '/questionNaire-1', component: questionnaire1, name: '问卷草稿箱' },
-                    { path: '/questionNaire-2', component: questionnaire2, name: '已发布问卷' },
-                    { path: '/questionNaire-3', component: questionnaire3, name: '已截止问卷' },
-                    { path: '/questionNaire-4', component: questionnaire4, name: '作废问卷' },
-                    { path: '/test', component: test, name: '测试页面' },
-                    { path: '/List', component: List, name: '问卷页面' },
-                    {  path: '/fill/:id',name: 'Fill',component: Fill, hidden: true },
-                    {  path: '/data/:id',name: 'Data',component: Data, hidden: true },
-                    {  path: '/edit/:id',name: 'Edit',component: Edit, hidden: true },
-                    {  path: '/datepicker/:id',name: 'Datepicker',component: Datepicker, hidden: true },
-                  
-                  
-                ]
+            { path: '/questionNaire', component: questionnaire, name: '问卷管理' },
+            {  path: '/fill/:id',name: 'Fill',component: Fill, hidden: true },
+            {  path: '/edit/:id',name: 'Edit',component: Edit, hidden: true },
+            {  path: '/data/:id',name: 'Data',component: Data, hidden: true },
+            {  path: '/fillphone/:id',name: 'FillPhone',component: FillPhone, hidden: true },
+        ]
     },
+
+
+    // {
+    //     path: '/',
+    //     component: Home,
+    //     name: '问卷管理',
+    //     leaf: true,//只有一个节点
+    //     iconCls: 'el-icon-tickets',
+    //     children: [
+    //                 // { path: '/questionNaire-1', component: questionnaire1, name: '问卷草稿箱' },
+    //                 // { path: '/questionNaire-2', component: questionnaire2, name: '已发布问卷' },
+    //                 // { path: '/questionNaire-3', component: questionnaire3, name: '已截止问卷' },
+    //                 // { path: '/questionNaire-4', component: questionnaire4, name: '作废问卷' },
+    //                 // { path: '/test', component: test, name: '测试页面', hidden: false  },
+    //                 { path: '/list', component: List, name: '问卷页面', hidden: false  },
+    //                 {  path: '/fill/:id',name: 'Fill',component: Fill, hidden: true },
+    //                 {  path: '/edit/:id',name: 'Edit',component: Edit, hidden: true },
+    //                 {  path: '/data/:id',name: 'Data',component: Data, hidden: true },
+    //                 {  path: '/fillphone/:id',name: 'FillPhone',component: FillPhone, hidden: true },
+
+    //                 // {  path: '/listTest',name: '假数据模拟',component: ListTest, hidden: false },
+    //                 // {  path: '/fillTest/:id',name: 'FillTest',component: FillTest, hidden: true },
+    //                 // {  path: '/dataTest/:id',name: 'DataTest',component: DataTest, hidden: true },
+    //                 // {  path: '/editTest/:id',name: 'EditTest',component: EditTest, hidden: true },
+    //                 // {  path: '/datepickerTest/:id',name: 'DatepickerTest',component: DatepickerTest, hidden: true },
+                  
+                  
+    //             ]
+    // },
     {
         path: '/',
         component: Home,
@@ -121,15 +154,17 @@ let routes = [
             { path: '/rounterchart', component: rounterChartList, name: '轮播图管理' }
         ]
     },
-    {
-        path: '/',
-        component: Home,
-        name: 'echarts管理',
-        iconCls: 'el-icon-bell',
-        children: [
-            { path: '/echarts', component: echarts, name: '系统消息' }
-        ]
-    },
+
+    
+    // {
+    //     path: '/',
+    //     component: Home,
+    //     name: 'echarts管理',
+    //     iconCls: 'el-icon-bell',
+    //     children: [
+    //         { path: '/echarts', component: echarts, name: '系统消息' }
+    //     ]
+    // },
     {
         path: '*',
         hidden: true,

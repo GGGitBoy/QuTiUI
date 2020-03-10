@@ -1,16 +1,13 @@
 import axios from 'axios';
 
-// let base = 'http://192.168.43.187:8080/myproject-questionnaire';    //手机测试路径
-// let base = 'http://192.168.43.236:8080/myproject-questionnaire';    //杰涛手机路径
 
 // let base = 'http://127.0.0.1:8080/myproject-questionnaire';    //本机路径
 // let base = 'http://www.waixingren.online';    //服务器路径
-// let base = 'http://172.18.44.94:8080/myproject-questionnaire';    //部署路径
-let base = '/api/myproject-questionnaire';                           //生产路径
+let base = '/api/myproject-questionnaire';                           //测试路径
 
 export const requestLogin = params => { return axios.post(`${base}/login`, params).then(res => res.data); };
 
-export const adminLogin = params => { return axios.post(`${base}/login`, params, {　headers:{'Content-Type':'application/x-www-form-urlencoded'}  }).then(res => console.log(res.data)) };
+export const adminLogin = params => { return axios.post(`${base}/login`, params, {　headers:{'Content-Type':'application/x-www-form-urlencoded'}  }) };
 
 /** 轮播图axios **/
 
@@ -44,10 +41,24 @@ export const getNaireListPage = params => { return axios.get(`${base}/questionna
 export const getNaireList = params => { return axios.get(`${base}/questionnaire/findAll.action`, { params: params }); };
 
 
-
+//=====
 export const saveNaire = params => { return axios.post(`${base}/questionnaire/save.action`, params)  };
 
+export const updateNaire = params => { return axios.post(`${base}/questionnaire/update.action`, params)  };
+
+export const updateNaireStatue = params => { return axios.get(`${base}/questionnaire/updateStatus.action`, { params: params }); };
+
 export const getNaire = params => { return axios.get(`${base}/questionnaire/get.action`, { params: params }); };
+
+export const removeNaires = params => { return axios.get(`${base}/questionnaire/delete.action`, { params: params }); };
+
+export const getNaireDetail = params => { return axios.get(`${base}/questionnaire/getDetail.action`, { params: params }); };
+
+export const getNaireTotalDetail = params => { return axios.get(`${base}/questionnaire/getTotalDetail.action`, { params: params }); };
+
+export const download = params => { return axios.post(`${base}/Upload/download.action`, { params: params, responseType:'blob'}); };
+
+export const batchRemoveNaire = params => { return axios.get(`${base}/questionnaire/delete.action`, { params: params }); };
 
 
 

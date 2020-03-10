@@ -59,7 +59,7 @@
 				<el-form-item label="选择图片">
 					<el-upload
 						ref="upload"
-						action="./Upload/image.action"			
+						action="api/myproject-questionnaire/Upload/image.action"			
 						name="picture"
 						list-type="picture"
 						:disabled="hasUpload"

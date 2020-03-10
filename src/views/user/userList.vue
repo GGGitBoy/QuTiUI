@@ -38,6 +38,9 @@
 				<el-form-item>
 					<el-button type="primary" @click="excelVisible = true;">批量导入</el-button>
 				</el-form-item>	
+				<el-form-item>
+					<el-button type="primary" @click="excelTemplate()">批量导入模板</el-button>
+				</el-form-item>	
 			</el-form>
 		</el-col>
 
@@ -137,10 +140,6 @@
 				<div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
 				<div class="el-upload__tip" slot="tip">只能上传excel文件，且不超过500kb</div>
 			</el-upload>
-			<span slot="footer" class="dialog-footer">
-				<el-button @click="excelVisible = false">取 消</el-button>
-				<el-button type="primary" @click="setPassword">确 定</el-button>
-			</span>
 		</el-dialog>
 
 
@@ -179,7 +178,7 @@
 
 					<el-upload
 						ref="upload"
-						action="./Upload/image.action"			
+						action="api/myproject-questionnaire/Upload/image.action"			
 						name="picture"
 						list-type="picture"
 						:disabled="hasUpload"
@@ -359,6 +358,16 @@
 			}
 		},
 		methods: {
+			excelTemplate(){
+				var yuming = "http://waixingren.online/resource/wordresource/template.xlsx"
+        
+				// 不是pdf格式
+				window.open(
+					"https://view.officeapps.live.com/op/view.aspx?src=" + yuming,
+					"_blank"
+				);
+
+			},
 			cessUpload(response, file, fileList){
 				this.excelVisible = false
 				this.getUsers();

@@ -22,15 +22,13 @@
           style="margin-top:40px;"
         >
           <el-row>
-            <el-col :span='2'>
-              <span class="iconfont">&#xe654;</span>
-            </el-col>
-            <el-col :span='22'>
+            <el-col :span='24'>
               <el-input
                 class="inps"
-                placeholder='用户名'
+                placeholder='请输入用户名'
                 v-model="loginForm.userName"
-              ></el-input>
+                style="font-size: 15px;text-align: center;">
+              </el-input>
             </el-col>
           </el-row>
         </el-form-item>
@@ -39,16 +37,14 @@
           prop="passWord"
         >
           <el-row>
-            <el-col :span='2'>
-              <span class="iconfont">&#xe616;</span>
-            </el-col>
-            <el-col :span='22'>
+            <el-col :span='24'>
               <el-input
                 type="password"
                 class="inps"
-                placeholder='密码'
+                placeholder='请输入密码'
                 v-model="loginForm.passWord"
-              ></el-input>
+                style="font-size: 15px;text-align: center;">
+              </el-input>
             </el-col>
           </el-row>
         </el-form-item>
@@ -85,7 +81,7 @@ export default {
         "#e23c66"
       ], //阴影颜色列表
       directionList: ["leftTop", "leftBottom", "rightTop", "rightBottom"], //星星运行方向
-      speed: 2, //星星运行速度
+      speed: 3, //星星运行速度
       last_star_created_time: new Date(), //上次重绘星星时间
       Ball: class Ball {
         constructor(radius) {
@@ -125,8 +121,8 @@ export default {
         passWord: ""
       },
       loginRules: {
-        userName: [{ required: true, message: "请输入用户名", trigger: "blur" }],
-        passWord: [{ required: true, message: "请输入密码", trigger: "blur" }]
+        userName: [{ required: true, message: "用户名不能为空", trigger: "blur" }],
+        passWord: [{ required: true, message: "密码不能为空", trigger: "blur" }]
       }
     };
   },
@@ -136,14 +132,14 @@ export default {
         var _this = this;
         this.$refs.loginForm.validate((valid) => {
             if (valid) {
-            this.logining = true;
-            var loginParams = { username: this.loginForm.userName, password: this.loginForm.passWord };
-            //json 转 表单数据
-            const querystring = require('querystring');
-            adminLogin(querystring.stringify(loginParams));
-            this.$router.push({ path: '/userList' });
-            this.logining = false;
-
+              this.logining = true;
+              var loginParams = { username: this.loginForm.userName, password: this.loginForm.passWord };
+              //json 转 表单数据
+              const querystring = require('querystring');
+              adminLogin(querystring.stringify(loginParams)).then(data => {
+                // this.$router.push({ path: '/userList' });
+                // this.logining = false;
+              });
             // requestLogin(loginParams).then(data => {
             //   this.logining = false;
             //   //NProgress.done();
@@ -278,8 +274,8 @@ export default {
     overflow: hidden;
   }
   #loginBox {
-    width: 480px;
-    height: 280px;
+    width: 400px;
+    height: 315px;
     position: absolute;
     top: 0;
     left: 0;
@@ -300,6 +296,16 @@ export default {
       background-color: transparent;
       font-size: 12px;
     }
+    // .el-form-item__error {
+    //   color: #F56C6C;
+    //   font-size: 14px;
+    //   line-height: 1;
+    //   padding-top: 20px;
+    //   padding-left: 160px;
+    //   position: absolute;
+    //   top: 100%;
+    //   left: 0;
+    // }
     .submitBtn {
       background-color: transparent;
       color: #39f;
@@ -310,4 +316,5 @@ export default {
     }
   }
 }
+
 </style>

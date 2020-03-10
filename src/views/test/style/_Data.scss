@@ -7,30 +7,26 @@
 
 .qu-content {
 	.qu-item {
-		// display: flex;
-		// border: 2px solid #ccc;
+		display: flex;
+		border: 2px solid #ccc;
 
 		&:hover {
 			background-color: #fff;
 		}
 
-		// .qu-data, .ans-data {
-		// 	display: flex;
-		// 	flex-direction: column;
+		.qu-data, .ans-data {
+			display: flex;
+			flex-direction: column;
 
-		// 	& > * {
-		// 		height: 2rem;
-		// 	}
+			& > * {
+				height: 2rem;
+			}
 
-		// 	.user-sex {
-		// 		height: 20rem;
-		// 	}
+			.echart {
+				height: 20rem;
+			}
 
-		// 	.user-major {
-		// 		height: 20rem;
-		// 	}
-
-		// }
+		}
 
 		.qu-data {
 			flex: 3;

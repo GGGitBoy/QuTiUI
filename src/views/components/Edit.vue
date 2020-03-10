@@ -2,7 +2,7 @@
 	<div class="container">
 		<div class="qu-wrap">
 			<header>
-				<span @click="iterator = backBtn(); iterator.next()">&lt; 返回</span>
+				<router-link tag="span" to="/questionNaire">&lt; 返回</router-link>
 							<p v-show="!titleEditing" @click="titleEditing = true">{{ tempTitle }}</p>
 							<input type="text"
 							v-focus
@@ -11,7 +11,7 @@
 							@focus="_title = title"
 							@blur="titleEditing = false">
 			
-					<el-row class="qu-wrap-header">
+					<!-- <el-row class="qu-wrap-header">
 						<el-col :span="2">
 							<label>作者:</label>
                         </el-col>
@@ -45,7 +45,7 @@
 							v-focus
 							v-model="image">
                         </el-col>
-					</el-row>
+					</el-row> -->
 			</header>
 
 			<div class="qu-content">
@@ -134,20 +134,26 @@
 				</div>
 			</div>
 			<footer>
-				<div class="date-part">
-					<label>问卷截止日期
-						<input type="text"
-						readonly="true"
-						v-model="date"
-						@click="isShowDatepicker = !isShowDatepicker">
-					</label>
-					<date-components id="date-picker"
-						v-show="isShowDatepicker"
-						@sendDate="changeDate">
-					</date-components>
+				<el-button  size="small" @click="timeSet()" >{{setTimeValue}}</el-button>
+				<div class="date-part" v-if="setTime">
+				
+
+    			<span class="demonstration">定时</span>
+					<el-date-picker
+						v-model="datetime"
+						type="date"
+						placeholder="选择日期">
+					</el-date-picker>
+					<el-time-picker
+						is-range
+						v-model="time"
+						range-separator="至"
+						start-placeholder="发布时间"
+						end-placeholder="截至时间"
+						placeholder="选择时间范围">
+					</el-time-picker>
 				</div>
 				<div class="ctrl-part">
-					<span @click="iterator = saveBtn(); iterator.next()">问卷预览</span>
 					<span @click="iterator = saveBtn(); iterator.next()">保存问卷</span>
 					<span @click="iterator = releaseBtn(); iterator.next()">发布问卷</span>
 				</div>
@@ -173,8 +179,9 @@
 import Data from '../data.js';
 import Store from '../store.js';
 import Datepicker from './Datepicker.vue';
+import util from '../../common/js/util'
 
-import { getNaire, saveNaire } from '../../api/api';
+import { getNaire, saveNaire, updateNaire } from '../../api/api';
 
 export default {
 	name: 'Edit',
@@ -187,7 +194,6 @@ export default {
 			quData: {},
 			questions: [],
 			questionTemplate:{},
-			date: '',
 			title: '',
 			_title: '',
 			digest: '',
@@ -214,6 +220,11 @@ export default {
 			topicEditing: false,
 			isShowPrompt: false,
 			isShowDatepicker: false,
+
+			datetime: '',
+			time: '',
+			setTime: false,
+			setTimeValue: "设置定时时间",
 		}
 	},
 
@@ -260,50 +271,64 @@ export default {
 	},
 
 	methods: {
+		timeSet() {
+			var set = this.setTime
+			if(set) {
+				this.setTimeValue = "设置定时时间"
+				this.setTime = !set
+				this.datetime = ''
+				this.time =''
+			} else {
+				this.setTimeValue = "取消定时"
+				this.setTime = !set
+			}
+		},
 		getData() {
 			let id = this.$route.params.id;
-
 			if (id === 0) {
 				let item = {};
-				item.title = `问卷调查`;
+				item.title = `请输入问卷标题`;
 				item.author = 'admin';
 				item.questionnairenumber = '20190707543';
 				item.state = 0;
 				item.status = '未发布';
-				item.time = '2018-12-31';
 				item.questions = [];
 				this.quData = item;
+
+				this.author = this.quData.author;
+				this.questionnairenumber = this.quData.questionnairenumber;
+				this.index = this.quData.id - 1;
+				this.questionTemplate = Data.template;
+
 			} else {
 				let para = {
 					id: id,
 				};
 				getNaire(para).then((res) => {
-					console.log(res.data.questions)
 					this.quData = res.data;		
 					this.questions = this.quData.questions;		
+
+					this.title = this.quData.title;
+					this.author = this.quData.author;
+					this.questionnairenumber = this.quData.questionnairenumber;
+					this.index = this.quData.id - 1;
+					this.questionTemplate = Data.template;
+
+					if(this.quData.starttime != null){
+						this.setTimeValue = "取消定时"
+						this.setTime = !this.setTime
+
+						this.datetime =  util.formatDate.format(new Date(this.quData.starttime), 'yyyy-MM-dd')
+
+						var timeSet = []
+						timeSet.push(util.stringToDate(this.quData.starttime))
+						timeSet.push(util.stringToDate(this.quData.endtime))
+						this.time =  timeSet
+					}
 				})
 			}
-
-			this.date = this.quData.time;
-			this.title = this.quData.title;
-			this.author = this.quData.author;
-			this.questionnairenumber = this.quData.questionnairenumber;
-			this.index = this.quData.id - 1;
-			this.questionTemplate = Data.template;
-			
-			console.log(this.questions)
 		},
 
-		changeDate(date) {
-			let nowTime = Date.now();
-			let chioceTime = new Date(date.replace(/-/g, ','))*1;
-			if (chioceTime < nowTime) {
-				this.iterator = null;
-				this.showPrompt(`选择的日期不能早于当前日期，请重新选择！`);
-				return;
-			}
-			this.date = date;
-		},
 
 		cancelTitleEdit() {
 			this.titleEditing = false;
@@ -345,7 +370,40 @@ export default {
 		},
 
 		addQuestion(item, index) {
-			item.quess.push({ "type": "notscore" })
+			var Quess = item.quess 
+			var site = Quess.length + 1
+			Quess.push({ "type": "notscore", 
+						 "site": site,
+									"options": [
+										{
+											"type": "notscore", 
+											"optionscontent": "选项一",
+											"site": 1
+										},
+										{
+											"type": "notscore", 
+											"optionscontent": "选项二",
+											"site": 2
+										},
+										{
+											"type": "notscore", 
+											"optionscontent": "选项三",
+											"site": 3
+										},
+										{
+											"type": "notscore", 
+											"optionscontent": "选项四",
+											"site": 4
+										},
+										{
+											"type": "notscore", 
+											"optionscontent": "选项五",
+											"site": 5
+										},
+
+									] 
+								})
+					
 		},
 
 		errorPrompt(text) {
@@ -404,44 +462,136 @@ export default {
 					this.questions.push({	"type": "textarea",  "content": "文本题",  "isMandatory": false		});
 					break;
 				case "score":
-					this.questions.push({	"type": "score",  "content": "评分题",  "isMandatory": false,  "quess": [{ "type": "notscore" }]	});
+					var site = this.questions.length + 1
+					this.questions.push({	
+						"type": "score",  
+						"content": "输入题目",  
+						"isMandatory": false, 		
+						"site": site,
+						"quess": [
+								{ 	"type": "notscore", 
+									"site": 1,
+									"options": [
+										{
+											"type": "notscore", 
+											"optionscontent": "选项一",
+											"site": 1
+										},
+										{
+											"type": "notscore", 
+											"optionscontent": "选项二",
+											"site": 2
+										},
+										{
+											"type": "notscore", 
+											"optionscontent": "选项三",
+											"site": 3
+										},
+										{
+											"type": "notscore", 
+											"optionscontent": "选项四",
+											"site": 4
+										},
+										{
+											"type": "notscore", 
+											"optionscontent": "选项五",
+											"site": 5
+										},
+
+									] 
+								}
+							]	
+						});
 					break;	
 			}	
 		},
 
-		saveData() {
+		saveData() {		
+			var date = util.formatDate.format(new Date(this.datetime), 'yyyy-MM-dd')
+			var start = util.formatDate.format(new Date(this.time[0]), 'hh:mm:ss')
+			var end = util.formatDate.format(new Date(this.time[1]), 'hh:mm:ss')
+			var startTime = date + " " + start
+			var endTime = date + " " + end
+
+			if(this.setTime){
+				if((this.datetime = "" ) || (this.time == "") || (this.datetime == null ) || (this.time == null)){	
+
+					this.$alert('设置的时间不能为空', '保存错误', {
+						confirmButtonText: '确定',
+					});
+					return
+				}	
+
+				if(this.quData.status = '发布中'){
+					let nowTime = new Date()	
+					let starttime = new Date(this.quData.starttime)
+					let endtime = new Date(this.quData.endtime)
+
+					console.log(starttime.getTime() - nowTime.getTime())
+					console.log(endtime.getTime() - nowTime.getTime())
+					
+					if ((starttime.getTime() - nowTime.getTime())>0 && (endtime.getTime() - nowTime.getTime())>0){
+						this.quData.status = '定时发布';
+					} else {
+						this.$alert('时间设置错误', '发布错误', {
+							confirmButtonText: '确定',
+						});
+						return
+					}	
+				}			
+			}
+
+			this.quData.starttime = util.stringToDate(startTime)
+			this.quData.endtime = util.stringToDate(endTime)
+
 			if (this.questions.length < 1) {
-				this.errorPrompt(`每份问卷至少一个问题！`);
-				return;
-            }
+				this.$alert('每份问卷至少一个问题', '保存错误', {
+					confirmButtonText: '确定',
+				});
+				return
+			}
+
+			if (this.title == '') {
+				this.$alert('标题不能为空', '保存错误', {
+					confirmButtonText: '确定',
+				});
+				return
+			}
+
 			this.quData.title = this.title;
 			this.quData.author = this.author;
-
 			this.quData.questions =  [...this.questions]
-			
-            console.log(this.quData.questions)
 
-            saveNaire(this.quData).then((res) => {
-                 this.$router.push({path: '/List'});
-            })
+	
+			if(this.quData.questionnaireid == null){
+				 saveNaire(this.quData).then((res) => {
+					this.$router.push({path: '/questionNaire'});
+				})
+			} else {
+				 updateNaire(this.quData).then((res) => {
+					this.$router.push({path: '/questionNaire'});
+				})
+			}
+
+           
 		},
 
 		*backBtn() {
-			yield this.$router.push({path: '/List'});
+			yield this.$router.push({path: '/questionNaire'});
 		},
 
 		*saveBtn() {
+			yield this.showPrompt(`确认要保存问卷？`);
 			yield this.saveData();
 		},
 
 		*releaseBtn() {
 			yield this.showPrompt(`确认要保存并发布问卷？`);
 			yield (() => {
-				this.quData.state = 1;
 				this.quData.status = '发布中';
-				this.saveData();
+				this.saveData();	
 			})();
-			yield this.$router.push({path: '/'});
+			yield this.$router.push({path: '/questionNaire'});
 		}
 	},
 
@@ -452,12 +602,6 @@ export default {
 	},
 
 	watch: {
-		// quList: {
-		// 	handler(list) {
-		// 		Store.save(list);
-		// 		this.iterator && this.iterator.next();
-		// 	}
-		// }
 	}
 }
 
